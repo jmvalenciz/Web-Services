@@ -25,4 +25,5 @@ def getAll():
 def getMayoresA(date):
     return date;
 
+@app.route('/', methods=[''])
 app.run(port=80, debug=True)
