@@ -23,10 +23,6 @@ schema = {  # formato de como debe estar el json que se reciba
 }
 
 
-def view(route):
-    return render_template(route)
-
-
 def getDate():
     start = datetime.strptime('2016-7-12 00:00:00', dateFormat)
     end = datetime.strptime(datetime.strftime(now, dateFormat), dateFormat)
@@ -49,11 +45,6 @@ for i in range(0, 7):
         **tipo_medicion,
         'valor': random.randint(40000, 80000)
     })
-
-
-@app.route('/', methods=['GET'])
-def index():
-    return view('index.html')
 
 
 @app.route('/mediciones/', methods=['GET'])
@@ -94,22 +85,24 @@ def getByFecha():
         return jsonify({'error': 'Se requiere una fecha'})
 
 
-@app.route('/update/', methods=['PUT'])
+@app.route('/mediciones/', methods=['PUT'])
 def updateDato():
-    dato = request.get_json()
-    for i in range(0, len(mediciones)):
-        if mediciones[i]['fecha'] == dato['fecha']:
-            mediciones[i] = dato
-            break
+    indice = request.get_json()['indice']
+    dato = request.get_json()['dato']
+    mediciones[indice] = dato
+    return dato
 
 
-@app.route('/delete/', methods=['DELETE'])
+@app.route('/mediciones/', methods=['DELETE'])
 def deleteDato():
     index = request.get_json()['index']
+    ret = None
     try:
-        mediciones.remove(index)
+        ret = mediciones[index]
+        mediciones.pop(index)
     except IndexError:
         return jsonify({'error': str(IndexError)})
+    return jsonify(ret)
 
 
 if(__name__ == '__main__'):
